@@ -76,7 +76,7 @@ with st.sidebar:
         else:
             consequence_answers = 1 + consequence_answers
     st.divider()
-    st.markdown('Version 0.0.2')
+    st.markdown('Version 0.0.3')
     st.markdown('Developed by D.M. Budd, P.Eng.')
 
 if likelihood_answers == 0:
@@ -198,7 +198,7 @@ my_fig = plt.show()
 st.pyplot(fig)
 st.markdown(f"Consequence of Failure = **{round(x_pt,1)}**")
 st.markdown(f"Likelihood of Failure = **{round(y_pt,1)}**")
-st.markdown(f"Normalized Risk Assessment score is **{x_pt_norm}, {u_pt_norm}** or **{report_ra}**")
+st.markdown(f"Normalized Risk Assessment score is **{x_pt_norm}, {y_pt_norm}** or **{report_ra}**")
 
 
 # DESCRIPTION
