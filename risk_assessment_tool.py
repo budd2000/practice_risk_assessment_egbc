@@ -93,7 +93,7 @@ y_pt = likelihood_total/likelihood_answers
 x_user = [x_pt]
 y_user = [y_pt]
 
-# Determine the risk assessment reporting
+# Determine the risk assessment category that is reported
 if x_pt >= 0:
     if y_pt <= 3:
         report_ra = "Low Risk"
@@ -128,13 +128,86 @@ if x_pt >= 4:
     else:
         report_ra = "Very High Risk"
 
+# Review the risk assessment category if the value is on a border category
+# This code can be cleaned up in the future
+if x_pt <= 1 and y_pt == 3:
+    report_ra = "Low-to-Moderate Risk"
+elif x_pt <= 2 and x_pt >= 1 and y_pt == 2:
+    report_ra = "Low-to-Moderate Risk"
+elif x_pt <= 3 and x_pt >= 2 and y_pt == 1:
+    report_ra = "Low-to-Moderate Risk"
+
+elif x_pt == 1 and y_pt >= 2 and y_pt <= 3:
+    report_ra = "Low-to-Moderate Risk"
+elif x_pt == 2 and y_pt >= 1 and y_pt <= 2:
+    report_ra = "Low-to-Moderate Risk"
+elif x_pt == 3 and y_pt >= 0 and y_pt <= 1:
+    report_ra = "Low-to-Moderate Risk"
+
+elif x_pt <= 2 and x_pt >= 1 and y_pt == 4:
+    report_ra = "Moderate-to-High Risk"
+elif x_pt <= 3 and x_pt >= 2 and y_pt == 3:
+    report_ra = "Moderate-to-High Risk"
+elif x_pt <= 4 and x_pt >= 3 and y_pt == 2:
+    report_ra = "Moderate-to-High Risk"
+elif x_pt <= 5 and x_pt >= 4 and y_pt == 1:
+    report_ra = "Moderate-to-High Risk"
+
+elif x_pt == 1 and y_pt >= 4 and y_pt <= 5:
+    report_ra = "Moderate-to-High Risk"
+elif x_pt == 2 and y_pt >= 3 and y_pt <= 4:
+    report_ra = "Moderate-to-High Risk"
+elif x_pt == 3 and y_pt >= 2 and y_pt <= 3:
+    report_ra = "Moderate-to-High Risk"
+elif x_pt == 4 and y_pt >= 1 and y_pt <= 2:
+    report_ra = "Moderate-to-High Risk"
+
+elif x_pt <= 4 and x_pt >= 3 and y_pt == 4:
+    report_ra = "High-to-Very High Risk"
+elif x_pt <= 5 and x_pt >= 4 and y_pt == 3:
+    report_ra = "High-to-Very High Risk"
+
+elif x_pt == 3 and y_pt >= 4 and y_pt <= 5:
+    report_ra = "High-to-Very High Risk"
+elif x_pt == 4 and y_pt >= 3 and y_pt <= 4:
+    report_ra = "High-to-Very High Risk"
+else:
+    report_ra = report_ra
+
 
 # Normalized score is based on rounding to the nearest whole number
 x_pt_norm = round(x_pt,0)
 y_pt_norm = round(y_pt,0)
 
-x_user_norm = [x_pt_norm]
-y_user_norm = [y_pt_norm]
+# Not used in plot
+# x_user_norm = [x_pt_norm]
+# y_user_norm = [y_pt_norm]
+
+
+# Determine the Consequence of Failure category
+if x_pt_norm == 5:
+    report_consequence = "Very High"
+elif x_pt_norm == 4:
+    report_consequence = "High"
+elif x_pt_norm == 3:
+    report_consequence = "Medium"
+elif x_pt_norm == 2:
+    report_consequence = "Low"
+else:
+    report_consequence = "Very Low"
+
+    
+# Determine the Likelihood of Failure category
+if y_pt_norm == 5:
+    report_likelihood = "Highly Likely"
+elif y_pt_norm == 4:
+    report_likelihood = "Likely"
+elif y_pt_norm == 3:
+    report_likelihood = "Possible"
+elif y_pt_norm == 2:
+    report_likelihood = "Unlikely"
+else:
+    report_likelihood = "Rare"
 
 
 # SET DEFAULT APPEARANCE OF MATRIX PLOT
@@ -155,14 +228,14 @@ y_high = np.array([5,5,5,5,5,5,4,4,3,3])
 y_vhigh = np.array([5,5,5,5,5,5,5,5,5,5])
 
 if x_pt >= 3:
-    x_text_offset = -25
+    x_text_offset = -45
 else:
-    x_text_offset = 25
+    x_text_offset = 45
 
 if y_pt >= 3:
-    y_text_offset = -25
+    y_text_offset = -45
 else:
-    y_text_offset = 25
+    y_text_offset = 45
 
 
 # PLOTTING
@@ -195,23 +268,26 @@ my_fig = plt.show()
 
 
 # TEXT OUTPUT
+# Reporting for Consequence and Likelihood of Failure represent the whole number values
+# Reporting for the Risk Assessment Category is based on the decimal values
+# If the Category is on the border, it is assessed as Category1-to-Category2
 st.pyplot(fig)
-st.markdown(f"Consequence of Failure = **{round(x_pt,1)}**")
-st.markdown(f"Likelihood of Failure = **{round(y_pt,1)}**")
-st.markdown(f"Normalized Risk Assessment score is **{x_pt_norm}, {y_pt_norm}** or **{report_ra}**")
+st.markdown(f"Consequence of Failure = **{round(x_pt,1)}** or **{report_consequence}**")
+st.markdown(f"Likelihood of Failure = **{round(y_pt,1)}** or **{report_likelihood}**")
+st.markdown(f"The Risk Assessment score is **({int(x_pt_norm)}, {int(y_pt_norm)})** or **{report_ra}**")
 
 
 # DESCRIPTION
 header = st.container()
 with header:
     st.title('Practice Risk Assessment Tool')
-    st.markdown('Answer the questions in the sidebar by sliding the bar to the appropriate position. There are two \
-    sections to complete. If a question does not apply to the practice, answer "N/A".')
+    st.markdown('Answer the questions in the sidebar by selecting options and sliding the bar to the appropriate \
+    position. There are two sections to complete. If a question does not apply to your practice, answer "N/A".')
     st.markdown('The risk assessment score is calculated by dividing the sum of each section by the number \
-    of questions answered.')
-    st.markdown('The normalized risk assessment score has been rounded to the nearest whole number.')
+    of questions answered. The raw score is plotted. The EGBC Guide indicates that a whole number score \
+    can be used for reporting. The reported risk assessment category is based on the raw score.')
     st.markdown('This is a webapp based on the Engineers & Geoscientists BC Practice Risk Assessment Tool found \
-    in the Appendix to the ["Guide to the Continuing Education Program" version 3.0](https://www.egbc.ca/getmedia/86710280-a428-4035-b596-e495bf36249d/EGBC-Guide-to-the-CEP.pdf). This tool has been developed \
+    in the Appendix to the ["Guide to the Continuing Education Program" version 4.0](https://www.egbc.ca/getmedia/86710280-a428-4035-b596-e495bf36249d/EGBC-Guide-to-the-CEP.pdf). This tool has been developed \
     independently as an exercise in Python and webapp development. This tool is not endorsed by EGBC.')
     st.markdown('Email info@cavvystructural.ca for any feedback or inquiries.')
     st.divider()
